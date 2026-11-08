@@ -1,71 +1,161 @@
-import { globalStyles } from '@/constants/styles';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function DetailScreen() {
-    const router = useRouter();
-    const { id, title, price, category, size, material, condition } = useLocalSearchParams();
+  const router = useRouter();
+  const params = useLocalSearchParams();
 
-    return (
-        <ScrollView style={globalStyles.container}>
-            <View style={globalStyles.headerBanner}>
-                <Text style={globalStyles.headerTitle}>Detail Produk Thrift #{id}</Text>
-                <Text style={globalStyles.headerSubtitle}>Spesifikasi lengkap & kondisi barang bekas berkualitas</Text>
-            </View>
+  const title = (params.title as string) || "Jaket Denim Vintage 90s";
+  const price = Number(params.price) || 150000;
+  const category = (params.category as string) || "Outerwear";
+  const size = (params.size as string) || "L";
+  const material = (params.material as string) || "Heavy Denim 14oz";
+  const condition = (params.condition as string) || "Grade A (No Minus)";
 
-            <View style={[globalStyles.card, { flexDirection: 'column', alignItems: 'stretch', padding: 18, gap: 12 }]}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0f172a' }}>{title}</Text>
-                <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#16a34a' }}>
-                    Rp {Number(price || 0).toLocaleString('id-ID')}
-                </Text>
+  return (
+    <View style={styles.container}>
+      {/* Header Top */}
+      <View style={styles.headerBanner}>
+        <Pressable onPress={() => router.back()} style={styles.navBackBtn}>
+          <Text style={{ color: "#ffffff", fontWeight: "bold" }}>←</Text>
+        </Pressable>
+        <Text style={styles.headerTitle}>🔍 Detail Item Thrifting</Text>
+      </View>
 
-                <View style={{ height: 1, backgroundColor: '#e2e8f0', marginVertical: 4 }} />
+      <ScrollView style={styles.content}>
+        {/* Title Box */}
+        <View style={styles.bannerBox}>
+          <Text style={styles.bannerTitle}>
+            Detail Produk Thrift #{params.id || "1"}
+          </Text>
+          <Text style={styles.bannerSub}>
+            Spesifikasi lengkap & kondisi barang bekas berkualitas
+          </Text>
+        </View>
 
-                <View style={{ gap: 10 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={{ color: '#64748b', fontWeight: '600' }}>Kategori Pakaian:</Text>
-                        <Text style={{ fontWeight: 'bold', color: '#1e293b' }}>{category || 'Pakaian'}</Text>
-                    </View>
+        {/* Card Main Info */}
+        <View style={styles.mainCard}>
+          <Text style={styles.productTitle}>{title}</Text>
+          <Text style={styles.productPrice}>
+            Rp {price.toLocaleString("id-ID")}
+          </Text>
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={{ color: '#64748b', fontWeight: '600' }}>Ukuran Tag (Size):</Text>
-                        <Text style={{ fontWeight: 'bold', color: '#2563eb', fontSize: 16 }}>{size || 'L'}</Text>
-                    </View>
+          <View style={styles.divider} />
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={{ color: '#64748b', fontWeight: '600' }}>Bahan / Material Utama:</Text>
-                        <Text style={{ fontWeight: 'bold', color: '#1e293b' }}>{material || 'Katun Original'}</Text>
-                    </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Kategori Pakaian:</Text>
+            <Text style={styles.infoValueBold}>{category}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Ukuran Tag (Size):</Text>
+            <Text style={styles.infoValueBold}>{size}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Bahan / Material Utama:</Text>
+            <Text style={styles.infoValueBold}>{material}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Kondisi Barang (Grade):</Text>
+            <Text style={styles.gradeText}>{condition}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Status Kebersihan:</Text>
+            <Text style={styles.qcText}>✓ Lolos QC & Laundry Hygienic</Text>
+          </View>
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={{ color: '#64748b', fontWeight: '600' }}>Kondisi Barang (Grade):</Text>
-                        <Text style={{ fontWeight: 'bold', color: '#d97706' }}>{condition || 'Grade A'}</Text>
-                    </View>
+          {/* Note Box */}
+          <View style={styles.noteBox}>
+            <Text style={styles.noteTitle}>📌 Catatan Transaksi Kasir:</Text>
+            <Text style={styles.noteDesc}>
+              • Barang thrifting bersifat unik (stok hanya 1 pcs per artikel).
+              {"\n"}• Pastikan kondisi barang sudah dicek fisik bersama pembeli
+              sebelum melakukan pembayaran di kasir.
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
 
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={{ color: '#64748b', fontWeight: '600' }}>Status Kebersihan:</Text>
-                        <Text style={{ fontWeight: 'bold', color: '#16a34a' }}>✓ Lolos QC & Laundry Hygienic</Text>
-                    </View>
-                </View>
-
-                <View style={{ height: 1, backgroundColor: '#e2e8f0', marginVertical: 4 }} />
-
-                <View style={{ backgroundColor: '#f8fafc', padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#cbd5e1' }}>
-                    <Text style={{ fontWeight: 'bold', color: '#334155', marginBottom: 4 }}>📌 Catatan Transaksi Kasir:</Text>
-                    <Text style={{ fontSize: 12, color: '#475569', lineHeight: 18 }}>
-                        • Barang thrifting bersifat unik (stok hanya 1 pcs per artikel).
-                        {"\n"}• Pastikan kondisi barang sudah dicek fisik bersama pembeli sebelum melakukan pembayaran di kasir.
-                    </Text>
-                </View>
-            </View>
-
-            <Pressable
-                style={[globalStyles.button, { marginTop: 15, paddingVertical: 14, marginBottom: 30 }]}
-                onPress={() => router.back()}>
-                <Text style={[globalStyles.buttonText, { textAlign: 'center', fontSize: 15 }]}>
-                    ← Kembali ke Katalog Kasir
-                </Text>
-            </Pressable>
-        </ScrollView>
-    );
+      {/* Button Back */}
+      <View style={styles.bottomBar}>
+        <Pressable style={styles.backCatalogBtn} onPress={() => router.back()}>
+          <Text style={styles.backCatalogText}>← Kembali ke Katalog Kasir</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#f8fafc" },
+  headerBanner: {
+    backgroundColor: "#0b1329",
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  navBackBtn: { paddingRight: 8 },
+  headerTitle: { fontSize: 16, fontWeight: "bold", color: "#ffffff" },
+  content: { flex: 1, padding: 16 },
+  bannerBox: {
+    backgroundColor: "#0b1329",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 14,
+  },
+  bannerTitle: { fontSize: 18, fontWeight: "bold", color: "#ffffff" },
+  bannerSub: { fontSize: 12, color: "#38bdf8", marginTop: 4 },
+  mainCard: {
+    backgroundColor: "#ffffff",
+    padding: 18,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  productTitle: { fontSize: 20, fontWeight: "bold", color: "#0f172a" },
+  productPrice: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#16a34a",
+    marginTop: 6,
+  },
+  divider: { height: 1, backgroundColor: "#f1f5f9", marginVertical: 14 },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 6,
+  },
+  infoLabel: { fontSize: 13, color: "#64748b" },
+  infoValueBold: { fontSize: 13, fontWeight: "bold", color: "#0f172a" },
+  gradeText: { fontSize: 13, fontWeight: "bold", color: "#d97706" },
+  qcText: { fontSize: 13, fontWeight: "bold", color: "#16a34a" },
+  noteBox: {
+    backgroundColor: "#f8fafc",
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    marginTop: 16,
+  },
+  noteTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#0f172a",
+    marginBottom: 4,
+  },
+  noteDesc: { fontSize: 11, color: "#64748b", lineHeight: 16 },
+  bottomBar: {
+    padding: 16,
+    backgroundColor: "#ffffff",
+    borderTopWidth: 1,
+    borderTopColor: "#e2e8f0",
+  },
+  backCatalogBtn: {
+    backgroundColor: "#2563eb",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  backCatalogText: { color: "#ffffff", fontWeight: "bold", fontSize: 14 },
+});
