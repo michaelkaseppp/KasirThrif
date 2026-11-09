@@ -9,6 +9,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+import LoadingIndicator from "../components/LoadingIndicator";
+import { fetchExternalSupplierStock } from "../services/supplierService";
 import { INITIAL_PRODUCTS, ThriftItem } from "./customer";
 
 export default function AdminScreen() {
@@ -19,6 +21,27 @@ export default function AdminScreen() {
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [size, setSize] = useState("");
+
+  const [loadingSupplier, setLoadingSupplier] = useState(false);
+
+  // Handler Import API Supplier (Fitur Tugas Teman)
+  const handleImportSupplierData = async () => {
+    setLoadingSupplier(true);
+    const supplierItems = await fetchExternalSupplierStock();
+
+    const formattedItems: ThriftItem[] = supplierItems.map((item) => ({
+      id: `sup-${item.id}`,
+      title: `[Import] ${item.title}`,
+      category: item.category,
+      price: Math.round(item.price * 15000), // Konversi USD ke Rupiah
+      size: "L",
+      material: "Imported Cotton",
+      condition: "Grade A (Supplier)",
+    }));
+
+    setProducts((prev) => [...formattedItems, ...prev]);
+    setLoadingSupplier(false);
+  };
 
   const handleAddProduct = () => {
     if (!title || !price) return Alert.alert("Error", "Isi Nama & Harga!");
@@ -40,12 +63,30 @@ export default function AdminScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header Admin */}
+      {/* Header Admin 1 Baris */}
       <View style={styles.headerBar}>
         <Text style={styles.headerTitle}>⚙️ Dashboard Admin</Text>
       </View>
 
       <ScrollView style={styles.mainContent}>
+        {/* Indikator Loading & Tombol Import API Supplier */}
+        {loadingSupplier && (
+          <LoadingIndicator message="Mengambil data supplier online..." />
+        )}
+
+        <Pressable
+          style={[
+            styles.actionBtn,
+            { backgroundColor: "#0284c7", marginBottom: 14 },
+          ]}
+          onPress={handleImportSupplierData}
+          disabled={loadingSupplier}
+        >
+          <Text style={styles.actionBtnText}>
+            🌐 Import Stok dari Supplier API (Async)
+          </Text>
+        </Pressable>
+
         {/* Form Tambah Barang */}
         <View style={styles.adminForm}>
           <Text
@@ -92,6 +133,7 @@ export default function AdminScreen() {
           </Pressable>
         </View>
 
+        {/* Daftar Stok Barang */}
         <Text
           style={{
             fontSize: 15,
@@ -124,7 +166,7 @@ export default function AdminScreen() {
           </View>
         ))}
 
-        {/* Tombol Kembali ke Menu Utama ditaruh di Paling Bawah */}
+        {/* Tombol Kembali ke Menu Utama di Bagian Bawah */}
         <Pressable
           style={[
             styles.actionBtn,
