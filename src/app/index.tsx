@@ -1,10 +1,13 @@
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ShiftPinVault from "../components/ShiftPinVault";
 import { useAuth } from "../context/AuthContext";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const [pinModalVisible, setPinModalVisible] = useState(false);
 
   const kasirName =
     user?.user_metadata?.callsign ||
@@ -14,25 +17,37 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        {/* BAR SESI KASIR AKTIF + SIGN OUT */}
+        {/* BAR SESI KASIR AKTIF + KUNCI PIN + SIGN OUT */}
         <View style={styles.sessionBar}>
           <View style={styles.sessionInfo}>
             <View style={styles.onlineDot} />
-            <View>
-              <Text style={styles.sessionName}>{kasirName}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.sessionName} numberOfLines={1}>
+                {kasirName}
+              </Text>
               <Text style={styles.sessionEmail} numberOfLines={1}>
                 {user?.email}
               </Text>
             </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.logoutBtn}
-            onPress={signOut}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.logoutText}>Sign Out</Text>
-          </TouchableOpacity>
+          <View style={styles.actionGroup}>
+            <TouchableOpacity
+              style={styles.pinBtn}
+              onPress={() => setPinModalVisible(true)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.pinText}>🔒 PIN</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.logoutBtn}
+              onPress={signOut}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.logoutText}>Sign Out</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* LOGO & JUDUL UTAMA */}
@@ -67,6 +82,13 @@ export default function HomeScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* MODAL SHIFT PIN VAULT (SECURE STORE) */}
+      <ShiftPinVault
+        visible={pinModalVisible}
+        onClose={() => setPinModalVisible(false)}
+        kasirName={kasirName}
+      />
     </View>
   );
 }
@@ -122,15 +144,30 @@ const styles = StyleSheet.create({
     color: "#94a3b8",
     fontSize: 11,
   },
+  actionGroup: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  pinBtn: {
+    backgroundColor: "#1d4ed8",
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  pinText: {
+    color: "#ffffff",
+    fontSize: 11,
+    fontWeight: "700",
+  },
   logoutBtn: {
     backgroundColor: "#334155",
-    paddingHorizontal: 10,
+    paddingHorizontal: 9,
     paddingVertical: 6,
     borderRadius: 8,
   },
   logoutText: {
     color: "#f87171",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
   },
   title: {
